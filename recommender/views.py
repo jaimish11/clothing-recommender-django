@@ -6,15 +6,11 @@ from django.db.models import Max, Count
 from django.db import connection
 from django.http import HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
-import re
 from collections import defaultdict
 from django.urls import reverse
-import traceback
-
-
-file = open('test.txt', 'a')
-
-
+from threading import Thread
+import queue
+import time
 
 def index(request):
 	random_items = Item.objects.order_by('?').only('image_URL')[:21]
@@ -27,42 +23,15 @@ def RecommendedListView(request):
 	model = Item
 	template_name = 'recommender/recommended.html'
 	paginate_by = 10
-	
-	def get_sim(pref, liked_index_list, user_preference_list):
-		pk_list = []
-		pks = []
-		top_val_1 = []
+
+	def calculate_dice_coe(random_items, pks, liked_index_list, upl, column_mapping, pref, queue):
 		desc_coe_list = []
-		random_items = []
 		dice_coe = defaultdict(int)
-		upl = user_preference_list.copy()
-		print(upl)
-		#print(pref)
-		column_mapping = {'item_type': 0, 'color': 1, 'fit': 2, 'occasion': 3, 'brand': 4, 'pattern': 5, 'fabric':6, 'length': 7}
-		lastkey = Item.objects.only('id').order_by('-id').first()
-		print(lastkey.id)
-		firstkey = Item.objects.only('id').order_by('id').first()
-		print(firstkey.id)
-		for pk in Item.objects.only('id').values('id'):
-			if pk['id'] in liked_index_list:
-				continue
-			else:
-				pks.append(pk['id'])
-
-		#print(len(pks))
-		for i in range(int(firstkey.id), int(lastkey.id)):
-			if i in liked_index_list:
-				continue
-			random_item = Item.objects.only('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').filter(id=i).values_list('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').first()		
-			random_items.append(random_item)
-
-		try:
-			for i,pk in zip(range(len(random_items)),pks):
+		top_val_1 = []
+		for i,pk in zip(range(len(random_items)),pks):
 				if pk in liked_index_list:
 					continue
 				#random_item = Item.objects.only('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').filter(id=i).exclude(id__in=liked_index_list).values_list('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').first()
-				if pk == 3647:
-					print(random_items[i]) 
 				#print(random_items[i])
 				#print(upl)
 				#print(pk)
@@ -79,13 +48,10 @@ def RecommendedListView(request):
 						if column_mapping[pref] == j:
 							top_val_1.append(2)
 							#print(top_val_1)
-							if pk == 3647:
-								print(str(top_val_1)) 
 						else:
 							top_val_1.append(0.5)
 							#print(top_val_1)
-							if pk == 3647:
-								print(str(top_val_1))
+							
 
 				top = sum(top_val_1)
 				bottom = 11
@@ -93,41 +59,129 @@ def RecommendedListView(request):
 				# print(bottom)
 				# print(top/bottom)
 				# print(round((2*top)/bottom,3))
-				if pk == 3647:
-					print(str(top))
-					print(str(bottom))
-					print(str(top/bottom))
+				
 				dice_coe[str(pk)] = round((2*top)/bottom,3)
 				top_val_1.clear()
 				#print(dice_coe)
+
+		desc_coe_dict = sorted(dice_coe, key = dice_coe.get, reverse = True)
+		for value in desc_coe_dict:
+			#print(dice_coe[value])
+			#print(value)
+			desc_coe_list.append(value)
+
+		#print(desc_coe_list[:11])
+		context = {
+			'desc_coe_list': desc_coe_list[:11]
+		}
+		queue.put(context)
+	
+	def get_sim(pref, liked_index_list, user_preference_list):
+		pk_list = []
+		pks = []
+		random_items = []
+		context = {}
+		upl = user_preference_list.copy()
+		print(upl)
+		#print(pref)
+		column_mapping = {'item_type': 0, 'color': 1, 'fit': 2, 'occasion': 3, 'brand': 4, 'pattern': 5, 'fabric':6, 'length': 7}
+		lastkey = Item.objects.only('id').order_by('-id').first()
+		print(lastkey.id)
+		firstkey = Item.objects.only('id').order_by('id').first()
+		print(firstkey.id)
+		start_time1 = time.time()
+		for pk in Item.objects.only('id').values('id'):
+			if pk['id'] in liked_index_list:
+				continue
+			else:
+				pks.append(pk['id'])
+		print(time.time() - start_time1)
+		#print(len(pks))
+		start_time2 = time.time()
+		item_queue = queue.Queue()
+
+		def retrieve_items(fk, lk, liked_index_list, item_queue):
+			for i in range(fk,lk):
+				if i in liked_index_list:
+					continue
+				random_item = Item.objects.only('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').filter(id=i).values_list('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').first()		
+				random_items.append(random_item)
+			item_queue.put(random_items)
+
+		thread = Thread(target = retrieve_items, args = (int(firstkey.id), int(lastkey.id), liked_index_list, item_queue))
+		thread.start()
+		thread.join()
+		random_items = item_queue.get()
+		print('Time for retrieving tuples')
+		print(time.time() - start_time2)
+		try:
+			queued_req1 = queue.Queue()
+			#queued_req2 = queue.Queue()
+			# queued_req3 = queue.Queue()
+			# queued_req4 = queue.Queue()
+			# queued_req5 = queue.Queue()
+			# queued_req6 = queue.Queue()
+			# queued_req7 = queue.Queue()
+			# queued_req8 = queue.Queue()
+			
+			start_time3 = time.time()
+			thread1 = Thread(target = calculate_dice_coe, args = (random_items, pks, liked_index_list, upl, column_mapping, pref, queued_req1,))
+			
+			#thread2 = Thread(target = calculate_dice_coe, args = (random_items[201:401], pks[201:401], liked_index_list, upl, column_mapping, pref, queued_req2,))
+			
+			# thread3 = Thread(target = calculate_dice_coe, args = (random_items[401:601], pks[401:601], liked_index_list, upl, column_mapping, pref, queued_req3,))
+			
+			# thread4 = Thread(target = calculate_dice_coe, args = (random_items[601:801], pks[601:801], liked_index_list, upl, column_mapping, pref, queued_req4,))
+			
+			# thread5 = Thread(target = calculate_dice_coe, args = (random_items[801:1001], pks[801:1001], liked_index_list, upl, column_mapping, pref, queued_req5,))
+			
+			# thread6 = Thread(target = calculate_dice_coe, args = (random_items[1001:1201], pks[1001:1201], liked_index_list, upl, column_mapping, pref, queued_req6,))
+			
+			# thread7 = Thread(target = calculate_dice_coe, args = (random_items[1201:1401], pks[1201:1401], liked_index_list, upl, column_mapping, pref, queued_req7,))
+			
+			# thread8 = Thread(target = calculate_dice_coe, args = (random_items[1401:len(random_items)], pks[1401:len(random_items)], liked_index_list, upl, column_mapping, pref, queued_req8,))
+			
+			
+			thread1.start()
+			#thread2.start()
+			# thread3.start()
+			# thread4.start()
+			# thread5.start()
+			# thread6.start()
+			# thread7.start()
+			# thread8.start()
+			thread1.join()
+			#thread2.join()
+			# thread3.join()
+			# thread4.join()
+			# thread5.join()
+			# thread6.join()
+			# thread7.join()
+			# thread8.join()
 			
 
 
-			desc_coe_dict = sorted(dice_coe, key = dice_coe.get, reverse = True)
-			for value in desc_coe_dict:
-				#print(dice_coe[value])
-				#print(value)
-				desc_coe_list.append(value)
-
-			print(desc_coe_list[:11])
-			for d in desc_coe_list[:11]:
-				print(dice_coe[d])
+			context = queued_req1.get()
+			
+			#context['2'] = queued_req1.get()
+			# context['3'] = queued_req3.get()
+			# context['4'] = queued_req4.get()
+			# context['5'] = queued_req5.get()
+			# context['6'] = queued_req6.get()
+			# context['7'] = queued_req7.get()
+			# context['8'] = queued_req8.get()
+			print(time.time() - start_time3)
+			print(context)
+			return context
 		except:
 			print('Exception occured')
-			print(pk)
-			print(i)
 			traceback.print_exc()
-		
 		finally:
 			connection.close()
-			context = { 
-				'desc_coe_list':desc_coe_list[:11],
-			}
-			return context
-		context = { 
-				'desc_coe_list':desc_coe_list[:11],
-			}
-		return context
+			
+		
+		
+		
 		
 
 	def get_preference_list(liked_index_list, pref):
