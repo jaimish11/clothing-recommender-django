@@ -5,9 +5,9 @@
 	<ul>
 		{% for item in random_items %}
 			<li><a href="{% url 'item-detail' item.pk %}">{{ item.image_URL }}</a> 
-			<div id="like-section">
-				{% include 'recommender/like_section.html' %}
-			</div>
+				<div id="like-section-{{item.id}}">
+					{% include 'recommender/like_all_section.html' %}
+				</div>
 			</li>
 		{% endfor %}
 	</ul>

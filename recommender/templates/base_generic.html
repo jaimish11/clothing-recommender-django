@@ -11,12 +11,12 @@
         crossorigin="anonymous"></script>
   <script type="text/javascript">
     $(document).ready(function(event){
-        $(document).on('click', '.btn' , function(event){
+        $(document).on('click', '#like_btn' , function(event){
             event.preventDefault();
             var pk = $(this).attr('value');
             $.ajax({
                 type : 'POST',
-                url: '{% url "like-toggle" %}',
+                url: '{% url "like-toggle"  %}',
                 data: {
                   'id': pk,
                   'csrfmiddlewaretoken': '{{ csrf_token }}'
@@ -25,6 +25,29 @@
                 success: function(response){
                   $('#like-section').html(response['form'])
                   console.log($('#like-section').html(response['form']));
+                },
+                error: function(rs, e){
+                  console.log(rs.responseText);
+                },
+            });
+        });
+ 
+    });
+    $(document).ready(function(event){
+        $(document).on('click', '#like_btn_all' , function(event){
+            event.preventDefault();
+            var pk = $(this).attr('value');
+            $.ajax({
+                type : 'POST',
+                url: '{% url "like-all-toggle" %}',
+                data: {
+                  'id': pk,
+                  'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function(response){
+                  $('#like-section-'+pk).html(response['form'])
+                  console.log($('#like-section-'+pk).html(response['form']));
                 },
                 error: function(rs, e){
                   console.log(rs.responseText);

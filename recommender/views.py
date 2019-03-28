@@ -31,12 +31,6 @@ def RecommendedListView(request):
 		for i,pk in zip(range(len(random_items)),pks):
 				if pk in liked_index_list:
 					continue
-				#random_item = Item.objects.only('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').filter(id=i).exclude(id__in=liked_index_list).values_list('item_type', 'color', 'fit', 'occasion', 'brand', 'pattern', 'fabric', 'length').first()
-				#print(random_items[i])
-				#print(upl)
-				#print(pk)
-				#print('------')
-				#random_item = ','.join(map(str,random_item))
 				for j in range(0,8):
 					
 
@@ -55,11 +49,6 @@ def RecommendedListView(request):
 
 				top = sum(top_val_1)
 				bottom = 11
-				# print(top)
-				# print(bottom)
-				# print(top/bottom)
-				# print(round((2*top)/bottom,3))
-				
 				dice_coe[str(pk)] = round((2*top)/bottom,3)
 				top_val_1.clear()
 				#print(dice_coe)
@@ -116,60 +105,11 @@ def RecommendedListView(request):
 		print(time.time() - start_time2)
 		try:
 			queued_req1 = queue.Queue()
-			#queued_req2 = queue.Queue()
-			# queued_req3 = queue.Queue()
-			# queued_req4 = queue.Queue()
-			# queued_req5 = queue.Queue()
-			# queued_req6 = queue.Queue()
-			# queued_req7 = queue.Queue()
-			# queued_req8 = queue.Queue()
-			
 			start_time3 = time.time()
-			thread1 = Thread(target = calculate_dice_coe, args = (random_items, pks, liked_index_list, upl, column_mapping, pref, queued_req1,))
-			
-			#thread2 = Thread(target = calculate_dice_coe, args = (random_items[201:401], pks[201:401], liked_index_list, upl, column_mapping, pref, queued_req2,))
-			
-			# thread3 = Thread(target = calculate_dice_coe, args = (random_items[401:601], pks[401:601], liked_index_list, upl, column_mapping, pref, queued_req3,))
-			
-			# thread4 = Thread(target = calculate_dice_coe, args = (random_items[601:801], pks[601:801], liked_index_list, upl, column_mapping, pref, queued_req4,))
-			
-			# thread5 = Thread(target = calculate_dice_coe, args = (random_items[801:1001], pks[801:1001], liked_index_list, upl, column_mapping, pref, queued_req5,))
-			
-			# thread6 = Thread(target = calculate_dice_coe, args = (random_items[1001:1201], pks[1001:1201], liked_index_list, upl, column_mapping, pref, queued_req6,))
-			
-			# thread7 = Thread(target = calculate_dice_coe, args = (random_items[1201:1401], pks[1201:1401], liked_index_list, upl, column_mapping, pref, queued_req7,))
-			
-			# thread8 = Thread(target = calculate_dice_coe, args = (random_items[1401:len(random_items)], pks[1401:len(random_items)], liked_index_list, upl, column_mapping, pref, queued_req8,))
-			
-			
-			thread1.start()
-			#thread2.start()
-			# thread3.start()
-			# thread4.start()
-			# thread5.start()
-			# thread6.start()
-			# thread7.start()
-			# thread8.start()
+			thread1 = Thread(target = calculate_dice_coe, args = (random_items, pks, liked_index_list, upl, column_mapping, pref, queued_req1,))	
+			thread1.start()	
 			thread1.join()
-			#thread2.join()
-			# thread3.join()
-			# thread4.join()
-			# thread5.join()
-			# thread6.join()
-			# thread7.join()
-			# thread8.join()
-			
-
-
 			context = queued_req1.get()
-			
-			#context['2'] = queued_req1.get()
-			# context['3'] = queued_req3.get()
-			# context['4'] = queued_req4.get()
-			# context['5'] = queued_req5.get()
-			# context['6'] = queued_req6.get()
-			# context['7'] = queued_req7.get()
-			# context['8'] = queued_req8.get()
 			print(time.time() - start_time3)
 			print(context)
 			return context
@@ -178,11 +118,6 @@ def RecommendedListView(request):
 			traceback.print_exc()
 		finally:
 			connection.close()
-			
-		
-		
-		
-		
 
 	def get_preference_list(liked_index_list, pref):
 		def item_sql(liked_index_list):
@@ -291,10 +226,7 @@ def RecommendedListView(request):
 				#print(pref_index)
 				#print(type(pref_choice))
 				break
-
 		#Retrieve ids of liked items
-		
-
 		matching_pref_list = []
 
 		#Retrieve all items that match entered preference
@@ -322,19 +254,6 @@ def RecommendedListView(request):
 		#print(item_type_new_count)
 		for item in item_type_new_count:
 			item_type_new.append(item[0])
-		
-
-	'''context = {
-		'pref' : pref,
-		'item_type_count': item_type_count,
-		'color_count': color_count,
-		'fit_count': fit_count,
-		'occasion_count': occasion_count,
-		'brand_count': brand_count,
-		'pattern_count': pattern_count,
-		'fabric_count': fabric_count,
-		'length_count': length_count,
-	}'''
 	return render(request, template_name, context = get_user_pref())
 		
 def ItemLikeToggleView(request):
@@ -356,7 +275,7 @@ def ItemLikeToggleView(request):
 		html = render_to_string('recommender/like_section.html', context, request = request)
 		return JsonResponse({'form': html})
 
-def ItemLikeAllToggleView(request, pk):
+def ItemLikeAllToggleView(request):
 	item = get_object_or_404(Item, id = request.POST.get('id'))
 	is_liked = False
 	if item.likes.filter(id = request.user.id).exists():
@@ -367,11 +286,11 @@ def ItemLikeAllToggleView(request, pk):
 		is_liked = True
 	context = {
 		'item': item,
-		'is_liked': is_liked,
+		'is_liked':is_liked,
 		'total_likes': item.get_total_likes(),
 	}
 	if request.is_ajax():
-		html = render_to_string('recommender/like_section.html', context, request = request)
+		html = render_to_string('recommender/like_all_section.html', context, request = request)
 		return JsonResponse({'form': html})
 	
 
