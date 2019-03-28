@@ -1,0 +1,10 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+	<h1>Items</h1>
+	<ul>
+		{% for item in item_list %}
+			<li><a href="{% url 'item-detail' item.id %}">{{ item.image_URL }}</a></li>
+		{% endfor %}
+	</ul>
+{% endblock %}

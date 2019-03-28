@@ -1,0 +1,24 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+
+	<h1>Item detail</h1>
+	<ul>
+		<li>Name: {{ item.image_URL }}</li>
+		<li>Type: {{ item.item_type }}</li>
+		<li>Color: {{ item.color }}</li>
+		<li>Fit: {{ item.fit }}</li>
+		<li>Occasion: {{ item.occasion }}</li>
+		<li>Brand: {{ item.brand }}</li>
+		<li>Pattern: {{ item.pattern }}</li>
+		<li>Fabric: {{ item.fabric }}</li>
+		<li>Length: {{ item.length }}</li>
+		<!--<li>Likes: {{ item.likes.count }} <a href="{{ item.get_like_url }}">Like</a></li>-->
+		
+		<div id="like-section">
+			{% include 'recommender/like_section.html' %}
+		</div>
+
+	</ul>
+{% endblock %}

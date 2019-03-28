@@ -1,0 +1,19 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<h1>Recommended items</h1>
+
+	<form action="{% url 'recommended' %}" method="POST">
+		{% csrf_token %}
+		Preference<input type="text" name="preference" placeholder="Enter recommendation preference">
+		<button type="submit" name="pref">Recommend</button>
+	</form>
+
+	<ul>
+		{% for coe in desc_coe_list %}
+			<li>{{ coe }}</li>
+		{% endfor %}
+		
+	</ul>
+		
+
+{% endblock %}

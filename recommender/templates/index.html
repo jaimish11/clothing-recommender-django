@@ -1,0 +1,16 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+
+	<h1>Random items</h1>
+	<ul>
+		{% for item in random_items %}
+			<li><a href="{% url 'item-detail' item.pk %}">{{ item.image_URL }}</a> 
+			<div id="like-section">
+				{% include 'recommender/like_section.html' %}
+			</div>
+			</li>
+		{% endfor %}
+	</ul>
+
+
+{% endblock %}

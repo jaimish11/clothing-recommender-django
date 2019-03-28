@@ -1,0 +1,12 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<h1>Liked Items</h1>
+	<ul>
+		{% for item in likes %}
+			<li><a href="{{ item }}">{{ item }}</a></li>
+		{% endfor %}
+		
+	</ul>
+
+{% endblock %}
