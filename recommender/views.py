@@ -1,4 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from recommender.forms import LoginForm
 from recommender.models import Item, Preferences
 from django.views import generic
 from django.views.generic import RedirectView
@@ -11,6 +14,7 @@ from django.urls import reverse
 from threading import Thread
 import queue
 import time
+from django.contrib import messages
 
 def index(request):
 	random_items = Item.objects.order_by('?').only('image_URL')[:21]
@@ -19,11 +23,14 @@ def index(request):
 		'random_items': random_items,
 	}
 	return render(request, 'index.html', context)
+
+@login_required
 def RecommendedListView(request):
 	model = Item
 	template_name = 'recommender/recommended.html'
 	paginate_by = 10
 
+	
 	def calculate_dice_coe(random_items, pks, liked_index_list, upl, column_mapping, pref, queue):
 		desc_coe_list = []
 		dice_coe = defaultdict(int)
@@ -31,8 +38,8 @@ def RecommendedListView(request):
 		for i,pk in zip(range(len(random_items)),pks):
 				if pk in liked_index_list:
 					continue
+
 				for j in range(0,8):
-					
 
 					if random_items[i][j] in 'N/A' and upl[j] in 'N/A': 
 						continue
@@ -60,10 +67,23 @@ def RecommendedListView(request):
 			desc_coe_list.append(value)
 
 		#print(desc_coe_list[:11])
+		rec = []
+		desc_coe_list1 = desc_coe_list[:11]
+		print(desc_coe_list1)
+		rec = tuple([int(i) for i in desc_coe_list1])
+		urls = []
+		ids = []
+		#urls = Item.objects.raw('SELECT image_URL FROM recommender_item WHERE id in %s',[rec])
+		for u in Item.objects.filter(id__in = rec).only('image_URL', 'id').values('image_URL', 'id'):
+			urls.append(u['image_URL'])
+			ids.append(u['id'])
+		
+		rec = zip(urls,ids)
 		context = {
-			'desc_coe_list': desc_coe_list[:11]
+			'rec': rec,
 		}
 		queue.put(context)
+		
 	
 	def get_sim(pref, liked_index_list, user_preference_list):
 		pk_list = []
@@ -75,16 +95,16 @@ def RecommendedListView(request):
 		#print(pref)
 		column_mapping = {'item_type': 0, 'color': 1, 'fit': 2, 'occasion': 3, 'brand': 4, 'pattern': 5, 'fabric':6, 'length': 7}
 		lastkey = Item.objects.only('id').order_by('-id').first()
-		print(lastkey.id)
+		#print(lastkey.id)
 		firstkey = Item.objects.only('id').order_by('id').first()
-		print(firstkey.id)
+		#print(firstkey.id)
 		start_time1 = time.time()
 		for pk in Item.objects.only('id').values('id'):
 			if pk['id'] in liked_index_list:
 				continue
 			else:
 				pks.append(pk['id'])
-		print(time.time() - start_time1)
+		#print(time.time() - start_time1)
 		#print(len(pks))
 		start_time2 = time.time()
 		item_queue = queue.Queue()
@@ -101,8 +121,8 @@ def RecommendedListView(request):
 		thread.start()
 		thread.join()
 		random_items = item_queue.get()
-		print('Time for retrieving tuples')
-		print(time.time() - start_time2)
+		#print('Time for retrieving tuples')
+		#print(time.time() - start_time2)
 		try:
 			queued_req1 = queue.Queue()
 			start_time3 = time.time()
@@ -110,8 +130,8 @@ def RecommendedListView(request):
 			thread1.start()	
 			thread1.join()
 			context = queued_req1.get()
-			print(time.time() - start_time3)
-			print(context)
+			#print(time.time() - start_time3)
+			#print(context)
 			return context
 		except:
 			print('Exception occured')
@@ -207,14 +227,19 @@ def RecommendedListView(request):
 		liked_index_list = liked_ids_sql()
 		liked_index_list = [e for l in liked_index_list for e in l]
 		#print(liked_index_list)
-		return get_preference_list(liked_index_list, pref)
+		if len(liked_index_list) < 10:
+			messages.info(request, 'You must like atleast 10 items for us to provide accurate recommendations')
+		else:
+			return get_preference_list(liked_index_list, pref)
 
 	def get_user_pref():
 		if request.method == 'POST':
-			pref = request.POST.get('preference')
+			pref = request.POST.get('preferences')
 			pref = pref.strip()
 			#print(pref)
 			return liked_item_ids(pref)
+
+
 
 	def get_preference_list_single(pref, pref_index_list):
 		column_mapping = {'item_type': 0, 'color': 1, 'fit': 2, 'occasion': 3, 'brand': 4, 'pattern': 5, 'fabric':6, 'length': 7}
@@ -234,7 +259,7 @@ def RecommendedListView(request):
 		#print(type(request.user.id))
 		user_pref_list = []
 	
-		str1 = 'select id FROM recommender_item WHERE id in (select item_id from recommender_item_likes where user_id ='
+		str1 = 'select id FROM recommender_item WHERE id in (select item_id from recommender_item_likes where user_id = '
 		str2 = str(request.user.id)
 		str3 = ') and '
 		str4 = user_pref
@@ -254,6 +279,7 @@ def RecommendedListView(request):
 		#print(item_type_new_count)
 		for item in item_type_new_count:
 			item_type_new.append(item[0])
+	
 	return render(request, template_name, context = get_user_pref())
 		
 def ItemLikeToggleView(request):
@@ -295,16 +321,22 @@ def ItemLikeAllToggleView(request):
 	
 
 def AllLikedItemsView(request, pk):
+	paginate_by = 10
 	def liked_item_id():
 		with connection.cursor() as cursor:
-			cursor.execute('select image_URL from recommender_item where id in (select item_id from recommender_item_likes where user_id = %s)', [request.user.id])
+			cursor.execute('select id, image_URL from recommender_item where id in (select item_id from recommender_item_likes where user_id = %s)', [request.user.id])
 			row = cursor.fetchall()
 			return row
 	template_name = 'recommender/all_liked.html'
 	item = liked_item_id()
-	#print(item)
+	ids = []
+	urls = []
+	for i in item:
+		ids.append(i[0])
+		urls.append(i[1])
+	likes = zip(ids, urls)
 	context = {
-		'likes': item,
+		'likes': likes,
 	}
 	return render(request, template_name, context = context)
 
@@ -328,5 +360,6 @@ def ItemDetailView(request, pk):
 		'total_likes': item.get_total_likes(),
 	}
 	return render(request, template_name, context = context)
+
 
 

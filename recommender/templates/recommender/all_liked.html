@@ -2,11 +2,14 @@
 
 {% block content %}
 <h1>Liked Items</h1>
-	<ul>
-		{% for item in likes %}
-			<li><a href="{{ item }}">{{ item }}</a></li>
+	<div class="row">
+		{% for i,u in likes %}
+			<div class="column">
+				<a href="{% url 'item-detail' i %}"><img src="{{ u }}"></a>
+				
+			</div>
 		{% endfor %}
 		
-	</ul>
+	</div>
 
 {% endblock %}

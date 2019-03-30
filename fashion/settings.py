@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'recommender.apps.RecommenderConfig',
     'import_export',
     'debug_toolbar',
+    'widget_tweaks',
 
 ]
 

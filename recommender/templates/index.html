@@ -2,15 +2,15 @@
 {% block content %}
 
 	<h1>Random items</h1>
-	<ul>
+	<div class="row">
 		{% for item in random_items %}
-			<li><a href="{% url 'item-detail' item.pk %}">{{ item.image_URL }}</a> 
+			<div class="column"><a href="{% url 'item-detail' item.pk %}"><img src="{{ item.image_URL }}"></a> 
 				<div id="like-section-{{item.id}}">
 					{% include 'recommender/like_all_section.html' %}
 				</div>
-			</li>
+			</div>
 		{% endfor %}
-	</ul>
+	</row>
 
 
 {% endblock %}

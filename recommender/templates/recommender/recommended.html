@@ -2,18 +2,41 @@
 {% block content %}
 <h1>Recommended items</h1>
 
-	<form action="{% url 'recommended' %}" method="POST">
+	<form action="{% url 'recommended' %}" method="POST" >
 		{% csrf_token %}
-		Preference<input type="text" name="preference" placeholder="Enter recommendation preference">
+		<select name="preferences">
+			<option selected="Preference" disabled>Select preference</option>
+			<option value="item_type">Type</option>
+			<option value="color">Color</option>
+			<option value="fit">Fit</option>
+			<option value="occasion">Occasion</option>
+			<option value="pattern">Pattern</option>
+			<option value="fabric">Fabric</option>
+			<option value="length">Length</option>
+
+		</select>
 		<button type="submit" name="pref">Recommend</button>
 	</form>
+	{% if messages %}
+		<ul class="messages">
+			{% for message in messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
 
-	<ul>
-		{% for coe in desc_coe_list %}
-			<li>{{ coe }}</li>
-		{% endfor %}
+		</ul>
+	
+	{% else %}
+		<div class="row">
+		{% for u,i in rec %}
+
+			<div class="column">
+				<a href="{% url 'item-detail' i %}"><img src="{{ u }}"></a>
+			</div>
 		
-	</ul>
+		{% endfor %}
+		</div>
+	{% endif %}
+	
 		
 
 {% endblock %}

@@ -1,12 +1,14 @@
-<form action="{% url 'like-all-toggle' %}" method="POST">
-	{% csrf_token %}
-	{% if is_liked %}
-		<button type="submit" name="item_id" id="like_btn_all" class="btn btn-danger" value="{{ item.id }}" >Dislike</button>
-	{% else %}
-		<button type="submit" name="item_id" id="like_btn_all" class="btn btn-primary" value="{{ item.id }}" >Like</button>
-	{% endif %}
+{% if user.is_authenticated %}
+	<form action="{% url 'like-all-toggle' %}" method="POST">
+		{% csrf_token %}
+		{% if is_liked %}
+			<button type="submit" name="item_id" id="like_btn_all" class="btn btn-danger" value="{{ item.id }}" >Dislike</button>
+		{% else %}
+			<button type="submit" name="item_id" id="like_btn_all" class="btn btn-primary" value="{{ item.id }}" >Like</button>
+		{% endif %}
+{% endif %}
 
-</form> 
+	</form> 
 {% if total_likes == 1 %}
 	{{ total_likes }} person has liked this item
 {% elif total_likes == 0 %}
