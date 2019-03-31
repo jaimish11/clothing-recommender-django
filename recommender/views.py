@@ -16,6 +16,7 @@ import queue
 import time
 from django.contrib import messages
 
+
 def index(request):
 	random_items = Item.objects.order_by('?').only('image_URL')[:21]
 	context = {
@@ -23,6 +24,36 @@ def index(request):
 		'random_items': random_items,
 	}
 	return render(request, 'index.html', context)
+
+def PreferenceFilterView(request):
+	item_ids = []
+	user_prefs = []
+	ids = request.GET.get('ids')
+	prefs = request.GET.get('filters')
+	ids = ids.replace('[', '')
+	ids = ids.replace(']', '')
+	ids = ids.replace("'", '')
+	ids = ids.replace(' ', '')
+	prefs = prefs.replace('[', '')
+	prefs = prefs.replace(']', '')
+	prefs = prefs.replace('"', '')
+	item_ids.append(ids.split(","))
+	user_prefs.append(prefs.split(","))
+	item_ids = tuple(item_ids)
+	user_prefs = tuple(user_prefs)
+	print('items')
+	items = []
+	for i in Item.objects.filter(id__in = item_ids[0]).filter(item_type__in = user_prefs[0]).only('image_URL').values('image_URL'):
+		items.append(i['image_URL'])
+	print(items)
+	context = {
+		'items': items,
+	}
+	if request.is_ajax():
+		html = render_to_string('recommender/filter_section.html', context, request = request)
+		return JsonResponse({'form': html})
+
+
 
 @login_required
 def RecommendedListView(request):
@@ -67,20 +98,26 @@ def RecommendedListView(request):
 			desc_coe_list.append(value)
 
 		#print(desc_coe_list[:11])
-		rec = []
 		desc_coe_list1 = desc_coe_list[:11]
-		print(desc_coe_list1)
+		#print(desc_coe_list1)
 		rec = tuple([int(i) for i in desc_coe_list1])
 		urls = []
 		ids = []
+		item = []
 		#urls = Item.objects.raw('SELECT image_URL FROM recommender_item WHERE id in %s',[rec])
-		for u in Item.objects.filter(id__in = rec).only('image_URL', 'id').values('image_URL', 'id'):
+		for u in Item.objects.filter(id__in = rec).only('id', 'image_URL').values('id', 'image_URL'):
 			urls.append(u['image_URL'])
 			ids.append(u['id'])
+			
+
+		for u in Item.objects.filter(id__in = rec).only('item_type').values('item_type'):
+			item.append(u['item_type'])
 		
-		rec = zip(urls,ids)
+		data_rec = zip(urls,ids)
 		context = {
-			'rec': rec,
+			'rec': data_rec,
+			'type': item,
+			'ids': ids,
 		}
 		queue.put(context)
 		

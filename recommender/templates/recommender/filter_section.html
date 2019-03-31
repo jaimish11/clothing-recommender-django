@@ -1,0 +1,34 @@
+
+<ul class="sidebar-nav" style="padding-left: 0em;">
+			<div id="preference-filter">
+				<form action="{% url 'preference-filter' %}" method="POST">
+					{% csrf_token %}
+					<label>
+						<input type="checkbox" name="pref"  value="tshirts">T-shirts
+					</label>
+					<label>
+						<input type="checkbox" name="pref" value="shirts">Shirts
+					</label>
+					<label>
+						<input type="checkbox" name="pref" value="jeans">Jeans
+
+					</label>
+					<label>
+						<input type="checkbox" name="pref" value="track-pants">Trackpants
+					</label>
+					<label>
+						<input type="checkbox" name="pref" value="trousers">Trousers
+					</label>
+					<button type="submit" id="filter-button">Filter</button>
+				</form>
+				
+				
+			</div>
+		</ul>	
+<div id="filtered-div" class="row">
+	{% for i in items %}
+					<div class="column">
+						<a href=""><img src="{{ i }}"></a>
+					</div>
+	{% endfor %}			
+</div>

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'import_export',
     'debug_toolbar',
     'widget_tweaks',
+    'django_filters',
 
 ]
 
@@ -143,4 +144,6 @@ DEBUG_TOOLBAR_PANELS = [
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
+
+LOGIN_REDIRECT_URL = '/recommender'
 

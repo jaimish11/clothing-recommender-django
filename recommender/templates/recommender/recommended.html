@@ -1,7 +1,62 @@
 {% extends 'base_generic.html' %}
 {% block content %}
+<head>
+<script type="text/javascript">
+	$(document).ready(function(event){
+		
+        $(document).on('click', '#filter-button', function(event){
+        	event.preventDefault()
+            var filters = []
+            var rec_ids = {{ ids|safe }}
+            
+            $.each($("input[name='pref']:checked"), function(){
+            		filters.push($(this).val());
+
+            });
+            
+            $.ajax({
+            	type: 'GET',
+            	url: '{% url "preference-filter" %}',
+            	data:{
+            		'ids': '{{ ids }}',
+            		'filters': JSON.stringify(filters),
+            		'csrfmiddlewaretoken': '{{ csrf_token }}'
+
+            	},
+            	dataType: 'json',
+            	success: function(response){
+            		$('#preference-filter').html(response['form'])
+            		$('#recommended-div').fadeOut()
+            		
+
+            		console.log($('#preference-filter').html(response['form']));
+            	},
+            	error: function(rs, e){
+            		console.log(rs.responseText)
+            	},
+            });
+            
+            
+           
+        });
+    });
+    $(document).ready(function(event){
+
+        $(document).on('click', '#cancel-button', function(event){
+        	$('#recommended-div').fadeIn()
+        	$('#filtered-div').fadeOut()
+			    
+        });
+    });
+    $(document).ready(function(event){
+        $('input[type=checkbox]').prop('checked',false);		
+    });
+    
+</script>
+</head>
 <h1>Recommended items</h1>
 
+	
 	<form action="{% url 'recommended' %}" method="POST" >
 		{% csrf_token %}
 		<select name="preferences">
@@ -17,6 +72,8 @@
 		</select>
 		<button type="submit" name="pref">Recommend</button>
 	</form>
+	<button id="cancel-button" value="Cancel filters">Cancel filters</button>
+
 	{% if messages %}
 		<ul class="messages">
 			{% for message in messages %}
@@ -26,16 +83,31 @@
 		</ul>
 	
 	{% else %}
-		<div class="row">
-		{% for u,i in rec %}
+		
+		{% if rec %}
+			{% include 'recommender/filter_section.html' %}
+		{% endif %}
+		
+		
+			
+		
+			<div id="recommended-div" class="row">
+			{% for u,i in rec %}
 
-			<div class="column">
-				<a href="{% url 'item-detail' i %}"><img src="{{ u }}"></a>
+				<div class="column">
+					<a href="{% url 'item-detail' i %}"><img src="{{ u }}"></a>
+				</div>
+				
+			
+			{% endfor %}
 			</div>
 		
-		{% endfor %}
-		</div>
+			
 	{% endif %}
+
+	
+	
+	
 	
 		
 
