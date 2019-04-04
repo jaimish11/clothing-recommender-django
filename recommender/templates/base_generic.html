@@ -11,6 +11,9 @@
         src="http://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
         crossorigin="anonymous"></script>
+  <script src="https://code.highcharts.com/highcharts.src.js"></script>
+
+  
   <script type="text/javascript">
     $(document).ready(function(event){
         $(document).on('click', '#like_btn' , function(event){
@@ -57,15 +60,7 @@
             });
         });
     });
-    $(document).ready(function(event){
-        $('#filter-button').click(function(){
-            var prefs = []
-            $.each($('input[name="pref"]:checked'), function(){
-                prefs.push($(this).val());
-            });
-            alert('prefs:'+prefs.join(","));
-        });
-    });
+
   </script>
   <!-- Add additional CSS in static file -->
   
@@ -80,13 +75,16 @@
           {% if user.is_authenticated %}
             <li><a href="{% url 'recommended' %}">Recommender</a></li>
             <li><a href="{% url 'allliked' user.id %}">Liked items</a></li>
+            <li><a href="{% url 'stats' %}">Stats</a></li>
           {% endif %}
-        
+            
+          
        {% if user.is_authenticated %}
           <li>User: {{ user.get_username }}</li>
           <li><a href="{% url 'logout' %}?next={% url 'login' %}">Logout</a></li>
         {% else %}
           <li><a href="{% url 'login' %}?next={% url 'index' %}">Login</a></li>
+
         {% endif %}
         </ul>
      {% endblock %}

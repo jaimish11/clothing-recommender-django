@@ -1,0 +1,71 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+	<div id="container" style="width:50%; height:400px;"></div>
+<script src="https://code.highcharts.com/highcharts.src.js"></script>
+<script type="text/javascript">
+
+	var item_type_1 = "{{ item_type_data0|safe }}";
+	var item_type_count_1 = "{{ item_type_count_data0|safe }}";
+	var item_type_2 = "{{ item_type_data1|safe }}";
+	var item_type_count_2 = "{{ item_type_count_data1|safe }}";
+	var item_type_3 = "{{ item_type_data2|safe }}";
+	var item_type_count_3 = "{{ item_type_count_data2|safe }}";
+	var item_type_4 = "{{ item_type_data3|safe }}";
+	var item_type_count_4 = "{{ item_type_count_data3|safe }}";
+	var item_type_5 = "{{ item_type_data4|safe }}";
+	var item_type_count_5 = "{{ item_type_count_data4|safe }}";
+	console.log(item_type_count_1)
+	console.log(item_type_count_2)
+	console.log(item_type_count_3)
+	console.log(item_type_count_4)
+	Highcharts.chart('container', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Liked item breakdown'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true
+        }
+    },
+	    series: [{
+        name: 'Items',
+        colorByPoint: true,
+	        data: [{
+	            name: item_type_1,
+	            y: parseInt(item_type_count_1),
+	            sliced: true,
+	            selected: true
+	        }, {
+	            name: item_type_2,
+	            y: parseInt(item_type_count_2)
+	        }, {
+	            name: item_type_3,
+	            y: parseInt(item_type_count_3)
+	        }, {
+	            name: item_type_4,
+	            y: parseInt(item_type_count_4)
+	        }, {
+	            name: item_type_5,
+	            y: parseInt(item_type_count_5)
+	        }]
+    	}]
+	});
+	
+</script>
+{% endblock %}
+
+

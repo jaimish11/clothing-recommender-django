@@ -2,6 +2,31 @@
 {% block content %}
 <head>
 <script type="text/javascript">
+	
+	$(document).ready(function(event){
+		$('#recommend-button').attr('disabled', 'disabled');
+		function checkDropdown(){
+			
+			if (buttonDisable()) {
+				console.log('disabled')
+		        $('#recommend-button').attr('disabled', false);
+		    } else {
+		        $('#recommend-button').attr('disabled', 'disabled');
+		    }
+		}
+		function buttonDisable(){
+			console.log('called')
+			console.log($('#preferences').val())
+			if ($('#preferences').val() != '' ) {
+	        	return true;
+	    	} else {
+	        	return false;
+	    	}
+
+		}
+		$('#preferences').change(checkDropdown);
+	});
+		
 	$(document).ready(function(event){
 		
         $(document).on('click', '#filter-button', function(event){
@@ -35,9 +60,7 @@
             		console.log(rs.responseText)
             	},
             });
-            
-            
-           
+     
         });
     });
     $(document).ready(function(event){
@@ -51,16 +74,16 @@
     $(document).ready(function(event){
         $('input[type=checkbox]').prop('checked',false);		
     });
+
     
 </script>
 </head>
 <h1>Recommended items</h1>
 
-	
 	<form action="{% url 'recommended' %}" method="POST" >
 		{% csrf_token %}
-		<select name="preferences">
-			<option selected="Preference" disabled>Select preference</option>
+		<select id="preferences" name="preferences">
+			<option selected="Preference" value=''>Select preference</option>
 			<option value="item_type">Type</option>
 			<option value="color">Color</option>
 			<option value="fit">Fit</option>
@@ -70,7 +93,7 @@
 			<option value="length">Length</option>
 
 		</select>
-		<button type="submit" name="pref">Recommend</button>
+		<input type="submit" name="recommend-button" id="recommend-button" value="Recommend">
 	</form>
 	<button id="cancel-button" value="Cancel filters">Cancel filters</button>
 
@@ -87,10 +110,7 @@
 		{% if rec %}
 			{% include 'recommender/filter_section.html' %}
 		{% endif %}
-		
-		
 			
-		
 			<div id="recommended-div" class="row">
 			{% for u,i in rec %}
 
@@ -104,11 +124,5 @@
 		
 			
 	{% endif %}
-
-	
-	
-	
-	
-		
 
 {% endblock %}

@@ -14,6 +14,7 @@ from django.urls import reverse
 from threading import Thread
 import queue
 import time
+import json
 from django.contrib import messages
 
 
@@ -41,11 +42,11 @@ def PreferenceFilterView(request):
 	user_prefs.append(prefs.split(","))
 	item_ids = tuple(item_ids)
 	user_prefs = tuple(user_prefs)
-	print('items')
+	#print('items')
 	items = []
 	for i in Item.objects.filter(id__in = item_ids[0]).filter(item_type__in = user_prefs[0]).only('image_URL').values('image_URL'):
 		items.append(i['image_URL'])
-	print(items)
+	#print(items)
 	context = {
 		'items': items,
 	}
@@ -247,12 +248,18 @@ def RecommendedListView(request):
 		pattern_count = pattern_sql(liked_index_list)
 		fabric_count = fabric_sql(liked_index_list)
 		length_count = length_sql(liked_index_list)
-
-		#print(item_count)
+		print(item_count)
+		print(color_count)
+		print(fit_count)
+		print(occasion_count)
+		print(brand_count) 
+		print(pattern_count)
+		print(fabric_count)
+		print(length_count)
 		user_preference_list = []
 		for a,b,c,d,e,f,g,h in zip(item_count, color_count, fit_count, occasion_count, brand_count, pattern_count, fabric_count, length_count):
 			user_preference_list.extend([a.item_type, b.color, c.fit, d.occasion, e.brand, f.pattern, g.fabric, h.length ])
-		#print(user_preference_list)
+		
 		return get_sim(pref, liked_index_list, user_preference_list)
 
 	def liked_item_ids(pref):
@@ -397,6 +404,74 @@ def ItemDetailView(request, pk):
 		'total_likes': item.get_total_likes(),
 	}
 	return render(request, template_name, context = context)
+
+def ChartView(request):
+	def liked_ids_sql():
+		with connection.cursor() as cursor:
+			cursor.execute('select id from recommender_item where id in (select item_id from recommender_item_likes where user_id = %s)', [request.user.id])
+			row = cursor.fetchall()
+			return row
+	liked_index_list = liked_ids_sql()
+	liked_index_list = [e for l in liked_index_list for e in l]
+	def item_sql(liked_index_list):
+		str11 = 'SELECT id,max(mycount),item_type FROM (SELECT id,item_type, COUNT(item_type) mycount FROM recommender_item where id in ('
+		str12 = ','.join(map(str,liked_index_list))
+		str13 = ') GROUP BY item_type)'
+		q2 = str11 + str12 + str13
+		count = Item.objects.raw(q2)
+		return count
+	item_type_count = Item.objects.filter(id__in = liked_index_list).values('item_type').annotate(total = Count('item_type')).order_by('-total')
+	#print(item_type_count)
+	item_type_data = []
+	item_type_count_data = []
+	for i in item_type_count:
+		item_type_data.append(i['item_type'])
+		item_type_count_data.append(i['total'])
+	print(item_type_data)
+	print(item_type_count_data)
+	
+	count_series = {
+		'name': item_type_data[0],
+		'data': item_type_count_data,
+		'color': 'green'
+	}
+	count_series1 = {
+		'name': item_type_data[1],
+		'data': item_type_count_data,
+		'color': 'blue'
+	}
+	count_series2 = {
+		'name': item_type_data[2],
+		'data': item_type_count_data,
+		'color': 'red'
+	}
+	count_series3 = {
+		'name': item_type_data[3],
+		'data': item_type_count_data,
+		'color': 'yellow'
+	}
+	count_series4 = {
+		'name': item_type_data[4],
+		'data': item_type_count_data,
+		'color': 'black'
+	}
+	chart = {
+		'item_type_data0': item_type_data[0],
+		'item_type_data1': item_type_data[1],
+		'item_type_data2': item_type_data[2],
+		'item_type_data3': item_type_data[3],
+		'item_type_data4': item_type_data[4],
+		'item_type_count_data0': item_type_count_data[0],
+		'item_type_count_data1': item_type_count_data[1],
+		'item_type_count_data2': item_type_count_data[2],
+		'item_type_count_data3': item_type_count_data[3],
+		'item_type_count_data4': item_type_count_data[4],
+	}
+	
+	return render(request, 'recommender/stats_chart.html', context = chart)
+
+
+
 
 
 

@@ -10,7 +10,5 @@ urlpatterns = [
 	path('items', views.ItemsAllView.as_view(), name = 'items'),
 	path('items/liked/<int:pk>', views.AllLikedItemsView, name = 'allliked'),
 	path('preference/filter', views.PreferenceFilterView, name = 'preference-filter'),
-
-
-
+	path('user/statistics', views.ChartView, name = 'stats'),
 ]

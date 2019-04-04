@@ -31,7 +31,7 @@ class Item(models.Model):
 	def get_absolute_url(self):
 		"""Returns the url to access a detail record for this item"""
 		return reverse('item-detail', args = [str(self.id)])
-
+		
 	def get_total_likes(self):
 		return self.likes.count()
 
