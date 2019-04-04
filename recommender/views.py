@@ -413,48 +413,41 @@ def ChartView(request):
 			return row
 	liked_index_list = liked_ids_sql()
 	liked_index_list = [e for l in liked_index_list for e in l]
-	def item_sql(liked_index_list):
-		str11 = 'SELECT id,max(mycount),item_type FROM (SELECT id,item_type, COUNT(item_type) mycount FROM recommender_item where id in ('
-		str12 = ','.join(map(str,liked_index_list))
-		str13 = ') GROUP BY item_type)'
-		q2 = str11 + str12 + str13
-		count = Item.objects.raw(q2)
-		return count
+	
 	item_type_count = Item.objects.filter(id__in = liked_index_list).values('item_type').annotate(total = Count('item_type')).order_by('-total')
+
 	#print(item_type_count)
 	item_type_data = []
 	item_type_count_data = []
 	for i in item_type_count:
 		item_type_data.append(i['item_type'])
 		item_type_count_data.append(i['total'])
-	print(item_type_data)
-	print(item_type_count_data)
+	# print(item_type_data)
+	# print(item_type_count_data)
+	all_liked_count = []
+
+	for i in Item.objects.raw('select id,item_id from recommender_item_likes'):
+		all_liked_count.append(i.item_id)
 	
-	count_series = {
-		'name': item_type_data[0],
-		'data': item_type_count_data,
-		'color': 'green'
-	}
-	count_series1 = {
-		'name': item_type_data[1],
-		'data': item_type_count_data,
-		'color': 'blue'
-	}
-	count_series2 = {
-		'name': item_type_data[2],
-		'data': item_type_count_data,
-		'color': 'red'
-	}
-	count_series3 = {
-		'name': item_type_data[3],
-		'data': item_type_count_data,
-		'color': 'yellow'
-	}
-	count_series4 = {
-		'name': item_type_data[4],
-		'data': item_type_count_data,
-		'color': 'black'
-	}
+	all_liked_count = tuple(map(int,all_liked_count))
+	#print(all_liked_count)
+	all_liked_items = []
+	all_liked_items_count = []
+	
+	all_liked = Item.objects.filter(id__in = all_liked_count).values('item_type').annotate(total = Count('item_type')).order_by('-total')
+	for i in all_liked:
+		all_liked_items.append(i['item_type'])
+		all_liked_items_count.append(i['total'])
+	#print(all_liked_items)
+	my_liked_color_list = []
+	my_liked_color_count = []
+	my_liked_color = Item.objects.filter(id__in = liked_index_list).values('color').annotate(total = Count('item_type')).order_by('-total')
+	for i in my_liked_color:
+		my_liked_color_list.append(i['color'])
+		my_liked_color_count.append(i['total'])
+
+	print(my_liked_color_list)
+	
 	chart = {
 		'item_type_data0': item_type_data[0],
 		'item_type_data1': item_type_data[1],
@@ -466,6 +459,26 @@ def ChartView(request):
 		'item_type_count_data2': item_type_count_data[2],
 		'item_type_count_data3': item_type_count_data[3],
 		'item_type_count_data4': item_type_count_data[4],
+		'all': all_liked_items[0],
+		'all1': all_liked_items[1],
+		'all2': all_liked_items[2],
+		'all3': all_liked_items[3],
+		'all4': all_liked_items[4],
+		'all_count': all_liked_items_count[0],
+		'all_count1': all_liked_items_count[1],
+		'all_count2': all_liked_items_count[2],
+		'all_count3': all_liked_items_count[3],
+		'all_count4': all_liked_items_count[4],
+		'my_color': my_liked_color_list[0],
+		'my_color1': my_liked_color_list[1],
+		'my_color2': my_liked_color_list[2],
+		'my_color_count': my_liked_color_count[0],
+		'my_color_count1': my_liked_color_count[1],
+		'my_color_count2': my_liked_color_count[2]
+		
+
+
+		
 	}
 	
 	return render(request, 'recommender/stats_chart.html', context = chart)

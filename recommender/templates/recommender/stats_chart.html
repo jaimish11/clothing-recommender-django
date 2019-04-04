@@ -1,6 +1,8 @@
 {% extends 'base_generic.html' %}
 {% block content %}
 	<div id="container" style="width:50%; height:400px;"></div>
+	<div id="other-container" style="width: 50%; height: 400px;"></div>
+	<div id="my-color-container" style="width: 50%; height: 400px;"></div>
 <script src="https://code.highcharts.com/highcharts.src.js"></script>
 <script type="text/javascript">
 
@@ -14,10 +16,7 @@
 	var item_type_count_4 = "{{ item_type_count_data3|safe }}";
 	var item_type_5 = "{{ item_type_data4|safe }}";
 	var item_type_count_5 = "{{ item_type_count_data4|safe }}";
-	console.log(item_type_count_1)
-	console.log(item_type_count_2)
-	console.log(item_type_count_3)
-	console.log(item_type_count_4)
+	
 	Highcharts.chart('container', {
     chart: {
         plotBackgroundColor: null,
@@ -46,21 +45,144 @@
         colorByPoint: true,
 	        data: [{
 	            name: item_type_1,
-	            y: parseInt(item_type_count_1),
-	            sliced: true,
-	            selected: true
+	            y: parseInt(item_type_count_1)
+	            
+	            
 	        }, {
 	            name: item_type_2,
 	            y: parseInt(item_type_count_2)
+	           
 	        }, {
 	            name: item_type_3,
 	            y: parseInt(item_type_count_3)
+	           
 	        }, {
 	            name: item_type_4,
 	            y: parseInt(item_type_count_4)
+	           
 	        }, {
 	            name: item_type_5,
 	            y: parseInt(item_type_count_5)
+	           
+	        }]
+    	}]
+	});
+	var all = '{{ all|safe }}'
+	var all1 = '{{ all1|safe }}'
+	var all2 = '{{ all2|safe }}'
+	var all3 = '{{ all3|safe }}'
+	var all4 = '{{ all4|safe }}'
+	var all_count = '{{ all_count|safe }}'
+	var all_count1 = '{{ all_count1|safe }}'
+	var all_count2 = '{{ all_count2|safe }}'
+	var all_count3 = '{{ all_count3|safe }}'
+	var all_count4 = '{{ all_count4|safe }}'
+	Highcharts.chart('other-container', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'All liked items breakdown'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true,
+            
+        }
+    },
+	    series: [{
+        name: 'All items',
+        colorByPoint: true,
+	        data: [{
+	            name: all,
+	            y: parseInt(all_count)
+	            
+	            
+	        }, {
+	            name: all1,
+	            y: parseInt(all_count1)
+	            
+	        }, {
+	            name: all2,
+	            y: parseInt(all_count2)
+	            
+	        }, {
+	            name: all3,
+	            y: parseInt(all_count3)
+	            
+	        }, {
+	            name: all4,
+	            y: parseInt(all_count4)
+	            
+	        }]
+    	}]
+	});
+	var color = '{{ my_color|safe }}'
+	var color1 = '{{ my_color1|safe }}'
+	var color2 = '{{ my_color2|safe }}'
+	
+	console.log(color+color1+color2)
+
+	
+	var color_count = '{{ my_color_count|safe }}'
+	var color_count1 = '{{ my_color_count1|safe }}'
+	var color_count2 = '{{ my_color_count2|safe }}'
+	
+	
+	Highcharts.chart('my-color-container', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'My liked color breakdown'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: false
+            },
+            showInLegend: true,
+            
+        }
+    },
+	    series: [{
+        name: 'My colors',
+       
+	        data: [{
+	            name: color,
+	            y: parseInt(color_count),
+	            color: color
+	            
+	            
+	        }, {
+	            name: color1,
+	            y: parseInt(color_count1),
+	            color: '#000080'
+	            
+	        }, {
+	            name: color2,
+	            y: parseInt(color_count2),
+	            color: color2
+	            
 	        }]
     	}]
 	});
