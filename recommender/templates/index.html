@@ -1,10 +1,12 @@
 {% extends 'base_generic.html' %}
+{% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% block content %}
 
 	<h1>Random items</h1>
 	<div class="row">
 		{% for item in random_items %}
-			<div class="column"><a href="{% url 'item-detail' item.pk %}"><img src="{{ item.image_URL }}"></a> 
+			<div class="column"><a href="{% url 'item-detail' item.pk %}"><img src="{{ item.image_URL }}" alt="Unable to load image at this moment"></a> 
 				<div id="like-section-{{item.id}}">
 					{% include 'recommender/like_all_section.html' %}
 				</div>

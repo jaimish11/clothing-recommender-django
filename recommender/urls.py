@@ -7,6 +7,7 @@ urlpatterns = [
 	path('item/<int:pk>', views.ItemDetailView, name = 'item-detail'),
 	path('item/like/', views.ItemLikeToggleView, name = 'like-toggle'),
 	path('item/likes', views.ItemLikeAllToggleView, name = 'like-all-toggle'),
+	path('items/liked/like', views.ItemsLikedToggleView, name = 'liked-items-toggle'),
 	path('items', views.ItemsAllView.as_view(), name = 'items'),
 	path('items/liked/<int:pk>', views.AllLikedItemsView, name = 'allliked'),
 	path('preference/filter', views.PreferenceFilterView, name = 'preference-filter'),

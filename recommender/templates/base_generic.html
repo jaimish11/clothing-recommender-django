@@ -15,6 +15,12 @@
 
   
   <script type="text/javascript">
+    $('.sidebar-nav li').on('click', function (){
+      console.log('click')
+      $('.sidebar-nav li').removeClass('active');
+      $(this).addClass('active');
+    });
+   
     $(document).ready(function(event){
         $(document).on('click', '#like_btn' , function(event){
             event.preventDefault();
@@ -29,10 +35,10 @@
                 dataType: 'json',
                 success: function(response){
                   $('#like-section').html(response['form'])
-                  console.log($('#like-section').html(response['form']));
+                  //console.log($('#like-section').html(response['form']));
                 },
                 error: function(rs, e){
-                  console.log(rs.responseText);
+                  //console.log(rs.responseText);
                 },
             });
         });
@@ -52,15 +58,43 @@
                 dataType: 'json',
                 success: function(response){
                   $('#like-section-'+pk).html(response['form'])
-                  console.log($('#like-section-'+pk).html(response['form']));
+                  //console.log($('#like-section-'+pk).html(response['form']));
                 },
                 error: function(rs, e){
+                  //console.log(rs.responseText);
+                },
+            });
+        });
+    });
+    $(document).ready(function(event){
+        $(document).on('click', '#liked_item_btn' , function(event){
+            event.preventDefault();
+            var pk = $(this).attr('value');
+            $.ajax({
+                type : 'POST',
+                url: '{% url "liked-items-toggle" %}',
+                data: {
+                  'id': pk,
+                  'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                dataType: 'json',
+                success: function(response){
+                  $('#like-all-section-'+pk).html(response['form'])
+                  console.log($('#like-all-section-'+pk).html(response['form']));
+                },
+                error: function(rs, e){
+                  console.log(pk)
                   console.log(rs.responseText);
                 },
             });
         });
     });
 
+    
+    
+      
+ 
+  
   </script>
   <!-- Add additional CSS in static file -->
   
@@ -71,22 +105,26 @@
       <div class="col-sm-2">
       {% block sidebar %}
         <ul class="sidebar-nav">
-          <li><a href="{% url 'index' %}">Home</a></li>
+          <li class="{{ index_active_page }}"><a href="{% url 'index' %}">Home</a></li>
           {% if user.is_authenticated %}
-            <li><a href="{% url 'recommended' %}">Recommender</a></li>
-            <li><a href="{% url 'allliked' user.id %}">Liked items</a></li>
-            <li><a href="{% url 'stats' %}">Stats</a></li>
+            <li class="{{ recommended_active_page }}"><a href="{% url 'recommended' %}">Recommender</a></li>
+            <li class="{{ liked_active_page }}"><a href="{% url 'allliked' user.id %}">Liked items</a></li>
+            
+          {% endif %}
+          {% if user.is_authenticated and user.is_superuser %}
+            <li class="{{ stats_active_page }}"><a href="{% url 'stats' %}">Stats</a></li>
           {% endif %}
             
           
        {% if user.is_authenticated %}
-          <li>User: {{ user.get_username }}</li>
+          <li><a href="#">User: {{ user.get_username }}</a></li>
           <li><a href="{% url 'logout' %}?next={% url 'login' %}">Logout</a></li>
         {% else %}
           <li><a href="{% url 'login' %}?next={% url 'index' %}">Login</a></li>
 
         {% endif %}
         </ul>
+          
      {% endblock %}
       </div>
       <div class="col-sm-10 ">{% block content %}{% endblock %}

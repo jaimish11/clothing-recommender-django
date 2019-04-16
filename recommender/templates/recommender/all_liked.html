@@ -1,11 +1,16 @@
 {% extends 'base_generic.html' %}
-
+{% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% block content %}
 <h1>Liked Items</h1>
 	<div class="row">
 		{% for i,u in likes %}
 			<div class="column">
-				<a href="{% url 'item-detail' i %}"><img src="{{ u }}"></a>
+				<a href="{% url 'item-detail' i %}"><img src="{{ u }}" alt="Unable to load image at this moment"></a>
+
+				<div id="like-all-section-{{i}}">
+					{% include 'recommender/all_liked_toggle_section.html' %}
+				</div>
 	
 			</div>
 		{% endfor %}

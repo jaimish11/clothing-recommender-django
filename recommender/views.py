@@ -22,6 +22,7 @@ def index(request):
 	random_items = Item.objects.order_by('?').only('image_URL')[:21]
 	context = {
 
+		'index_active_page': 'active',
 		'random_items': random_items,
 	}
 	return render(request, 'index.html', context)
@@ -61,6 +62,10 @@ def RecommendedListView(request):
 	model = Item
 	template_name = 'recommender/recommended.html'
 	paginate_by = 10
+	context = {
+		'recommended_active_page': 'active'
+	}
+	return render(request, template_name, context)
 
 	
 	def calculate_dice_coe(random_items, pks, liked_index_list, upl, column_mapping, pref, queue):
@@ -248,14 +253,14 @@ def RecommendedListView(request):
 		pattern_count = pattern_sql(liked_index_list)
 		fabric_count = fabric_sql(liked_index_list)
 		length_count = length_sql(liked_index_list)
-		print(item_count)
-		print(color_count)
-		print(fit_count)
-		print(occasion_count)
-		print(brand_count) 
-		print(pattern_count)
-		print(fabric_count)
-		print(length_count)
+		# print(item_count)
+		# print(color_count)
+		# print(fit_count)
+		# print(occasion_count)
+		# print(brand_count) 
+		# print(pattern_count)
+		# print(fabric_count)
+		# print(length_count)
 		user_preference_list = []
 		for a,b,c,d,e,f,g,h in zip(item_count, color_count, fit_count, occasion_count, brand_count, pattern_count, fabric_count, length_count):
 			user_preference_list.extend([a.item_type, b.color, c.fit, d.occasion, e.brand, f.pattern, g.fabric, h.length ])
@@ -362,6 +367,25 @@ def ItemLikeAllToggleView(request):
 	if request.is_ajax():
 		html = render_to_string('recommender/like_all_section.html', context, request = request)
 		return JsonResponse({'form': html})
+
+def ItemsLikedToggleView(request):
+	item = get_object_or_404(Item, id = request.POST.get('id'))
+	print(item.get_total_likes())
+	is_liked = False
+	if item.likes.filter(id = request.user.id).exists():
+		item.likes.remove(request.user)
+		is_liked = False
+	else:
+		item.likes.add(request.user)
+		is_liked = True
+	context = {
+		'item': item,
+		'is_liked':is_liked,
+		'total_likes': item.get_total_likes(),
+	}
+	if request.is_ajax():
+		html = render_to_string('recommender/all_liked_toggle_section.html', context, request = request)
+		return JsonResponse({'form': html})
 	
 
 def AllLikedItemsView(request, pk):
@@ -380,6 +404,8 @@ def AllLikedItemsView(request, pk):
 		urls.append(i[1])
 	likes = zip(ids, urls)
 	context = {
+		'is_liked': True,
+		'liked_active_page': 'active',
 		'likes': likes,
 	}
 	return render(request, template_name, context = context)
@@ -446,9 +472,10 @@ def ChartView(request):
 		my_liked_color_list.append(i['color'])
 		my_liked_color_count.append(i['total'])
 
-	print(my_liked_color_list)
+	#print(my_liked_color_list)
 	
 	chart = {
+		'stats_active_page': 'active',
 		'item_type_data0': item_type_data[0],
 		'item_type_data1': item_type_data[1],
 		'item_type_data2': item_type_data[2],

@@ -1,4 +1,6 @@
 {% extends 'base_generic.html' %}
+{% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% block content %}
 <head>
 <script type="text/javascript">
@@ -115,7 +117,7 @@
 			{% for u,i in rec %}
 
 				<div class="column">
-					<a href="{% url 'item-detail' i %}"><img src="{{ u }}"></a>
+					<a href="{% url 'item-detail' i %}"><img src="{{ u }}" alt="Unable to load image at this moment"></a>
 				</div>
 				
 			

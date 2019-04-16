@@ -1,0 +1,19 @@
+{% if user.is_authenticated %}
+	<form action="{% url 'liked-items-toggle' %}" method="POST">
+		{% csrf_token %}
+		{% if is_liked %}
+			<button type="submit" name="item_id" id="liked_item_btn" class="btn btn-danger" value="{{ i }}" >Dislike</button>
+		{% else %}
+			<button type="submit" name="item_id" id="liked_item_btn" class="btn btn-primary" value="{{item.id}}" >Like</button>
+		{% endif %}
+	</form>
+{% endif %}
+
+	 
+{% if total_likes == 1 %}
+	{{ total_likes }} person has liked this item
+{% elif total_likes == 0 %}
+	No one has liked this item yet
+{% else %}
+	{{ total_likes }} people have liked this item
+{% endif %}

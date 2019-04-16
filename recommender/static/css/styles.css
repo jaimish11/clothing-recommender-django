@@ -25,6 +25,52 @@ img{
   padding-bottom: 4px;
 }
 
+.sidebar-nav{
+  margin: 0.5em 0em 0em 0em;
+  padding: 0;
+  width: 200px;
+  background-color: #f1f1f1;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+
+}
+.sidebar-nav a {
+  display: block;
+  padding: 16px;
+  text-decoration: none;
+}
+
+.sidebar-nav a:hover {
+  background-color: #555;
+  color: white;
+  text-decoration: none;
+}
+li.active a{
+  background-color: #555;
+  color: white;
+  text-decoration: none;
+}
+/* On screens that are less than 700px wide, make the sidebar into a topbar */
+@media screen and (max-width: 700px) {
+  .sidebar-nav {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar-nav a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+  .sidebar-nav a {
+    text-align: center;
+    float: none;
+  }
+}
+
+
 /* Responsive layout - makes a two column-layout instead of four columns */
 @media screen and (max-width: 800px) {
   .column {
