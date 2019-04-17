@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'recommender.apps.RecommenderConfig',
     'import_export',
     'debug_toolbar',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'fashion.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -440,16 +440,6 @@ def ChartView(request):
 	liked_index_list = liked_ids_sql()
 	liked_index_list = [e for l in liked_index_list for e in l]
 	
-	item_type_count = Item.objects.filter(id__in = liked_index_list).values('item_type').annotate(total = Count('item_type')).order_by('-total')
-
-	#print(item_type_count)
-	item_type_data = []
-	item_type_count_data = []
-	for i in item_type_count:
-		item_type_data.append(i['item_type'])
-		item_type_count_data.append(i['total'])
-	# print(item_type_data)
-	# print(item_type_count_data)
 	all_liked_count = []
 
 	for i in Item.objects.raw('select id,item_id from recommender_item_likes'):
@@ -464,28 +454,17 @@ def ChartView(request):
 	for i in all_liked:
 		all_liked_items.append(i['item_type'])
 		all_liked_items_count.append(i['total'])
-	#print(all_liked_items)
-	my_liked_color_list = []
-	my_liked_color_count = []
-	my_liked_color = Item.objects.filter(id__in = liked_index_list).values('color').annotate(total = Count('item_type')).order_by('-total')
-	for i in my_liked_color:
-		my_liked_color_list.append(i['color'])
-		my_liked_color_count.append(i['total'])
-
-	#print(my_liked_color_list)
+	print(all_liked_items)
 	
+	all_liked_brands = []
+	all_liked_brands_count = []
+	all_liked_brand = Item.objects.filter(id__in = all_liked_count).values('brand').annotate(total = Count('brand')).order_by('-total')
+	for i in all_liked_brand:
+		all_liked_brands.append(i['brand'])
+		all_liked_brands_count.append(i['total'])
+
 	chart = {
 		'stats_active_page': 'active',
-		'item_type_data0': item_type_data[0],
-		'item_type_data1': item_type_data[1],
-		'item_type_data2': item_type_data[2],
-		'item_type_data3': item_type_data[3],
-		'item_type_data4': item_type_data[4],
-		'item_type_count_data0': item_type_count_data[0],
-		'item_type_count_data1': item_type_count_data[1],
-		'item_type_count_data2': item_type_count_data[2],
-		'item_type_count_data3': item_type_count_data[3],
-		'item_type_count_data4': item_type_count_data[4],
 		'all': all_liked_items[0],
 		'all1': all_liked_items[1],
 		'all2': all_liked_items[2],
@@ -496,16 +475,9 @@ def ChartView(request):
 		'all_count2': all_liked_items_count[2],
 		'all_count3': all_liked_items_count[3],
 		'all_count4': all_liked_items_count[4],
-		'my_color': my_liked_color_list[0],
-		'my_color1': my_liked_color_list[1],
-		'my_color2': my_liked_color_list[2],
-		'my_color_count': my_liked_color_count[0],
-		'my_color_count1': my_liked_color_count[1],
-		'my_color_count2': my_liked_color_count[2]
-		
+		'all_liked_brands': all_liked_brands[:5],
+		'all_liked_brands_count': all_liked_brands_count[:5]
 
-
-		
 	}
 	
 	return render(request, 'recommender/stats_chart.html', context = chart)

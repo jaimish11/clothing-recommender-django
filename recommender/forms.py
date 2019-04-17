@@ -1,15 +1,15 @@
 from django import forms
 
 class LoginForm(forms.Form):
-	email = forms.EmailField(max_length = 254)
-	password = forms.CharField(max_length = 20, widget = forms.PasswordInput)
+	username = forms.CharField(help_text = 'Enter username', max_length = 254, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
+	password = forms.CharField(help_text = 'Enter password', max_length = 20, widget = forms.PasswordInput(attrs={'placeholder':'Password'}))
 
 	def clean(self):
 		cleaned_data  = super(LoginForm, self).clean()
-		email = cleaned_data.get('email')
+		username = cleaned_data.get('username')
 		password = cleaned_data.get('password')
-		if not email:
-			raise forms.ValidationError('Please enter email')
+		if not username:
+			raise forms.ValidationError('Please enter username')
 		elif not password:
 			raise forms.ValidationError('Please enter password')
 
