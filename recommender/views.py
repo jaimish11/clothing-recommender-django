@@ -65,8 +65,6 @@ def RecommendedListView(request):
 	context = {
 		'recommended_active_page': 'active'
 	}
-	return render(request, template_name, context)
-
 	
 	def calculate_dice_coe(random_items, pks, liked_index_list, upl, column_mapping, pref, queue):
 		desc_coe_list = []
@@ -123,7 +121,8 @@ def RecommendedListView(request):
 		context = {
 			'rec': data_rec,
 			'type': item,
-			'ids': ids,
+			'ids': ids
+			
 		}
 		queue.put(context)
 		
@@ -174,7 +173,7 @@ def RecommendedListView(request):
 			thread1.join()
 			context = queued_req1.get()
 			#print(time.time() - start_time3)
-			#print(context)
+			print(context)
 			return context
 		except:
 			print('Exception occured')
@@ -328,6 +327,7 @@ def RecommendedListView(request):
 		#print(item_type_new_count)
 		for item in item_type_new_count:
 			item_type_new.append(item[0])
+	
 	
 	return render(request, template_name, context = get_user_pref())
 		

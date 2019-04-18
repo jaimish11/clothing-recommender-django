@@ -1,5 +1,4 @@
 
-<ul class="sidebar-nav" style="padding-left: 0em;">
 			<div id="preference-filter">
 				<form action="{% url 'preference-filter' %}" method="POST">
 					{% csrf_token %}
@@ -23,8 +22,7 @@
 				</form>
 				
 				
-			</div>
-		</ul>	
+			</div>	
 <div id="filtered-div" class="row">
 	{% for i in items %}
 					<div class="column">
