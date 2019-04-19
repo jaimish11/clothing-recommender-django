@@ -25,6 +25,7 @@ class Item(models.Model):
 	brand = models.CharField(max_length = 200, null = True, blank = True)
 	pattern = models.CharField(max_length = 200, null = True, blank = True)
 	fabric = models.CharField(max_length = 200, null = True, blank = True)
+	gender = models.CharField(max_length = 1, null = True, blank = True)
 	length = models.CharField(max_length = 200, null = True, blank = True)
 	likes = models.ManyToManyField(User, blank = True, related_name = 'item_likes')
 

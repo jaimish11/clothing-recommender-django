@@ -43,10 +43,21 @@ def PreferenceFilterView(request):
 	user_prefs.append(prefs.split(","))
 	item_ids = tuple(item_ids)
 	user_prefs = tuple(user_prefs)
-	#print('items')
+	print(user_prefs)
 	items = []
-	for i in Item.objects.filter(id__in = item_ids[0]).filter(item_type__in = user_prefs[0]).only('image_URL').values('image_URL'):
-		items.append(i['image_URL'])
+	if len(user_prefs[0]) == 1:
+		if user_prefs[0][0] in 'M' or user_prefs[0][0] in 'F':
+			for i in Item.objects.filter(id__in = item_ids[0]).filter(gender__in = user_prefs[0][0]).only('image_URL').values('image_URL'):
+				items.append(i['image_URL'])
+		else:
+			for i in Item.objects.filter(id__in = item_ids[0]).filter(item_type__in = user_prefs[0]).only('image_URL').values('image_URL'):
+				items.append(i['image_URL'])
+
+	else:
+		for i in Item.objects.filter(id__in = item_ids[0]).filter(item_type__in = user_prefs[0], gender__in = user_prefs[0]).only('image_URL').values('image_URL'):
+			items.append(i['image_URL'])
+		
+
 	#print(items)
 	context = {
 		'items': items,
@@ -73,20 +84,21 @@ def RecommendedListView(request):
 		for i,pk in zip(range(len(random_items)),pks):
 				if pk in liked_index_list:
 					continue
-
+				
 				for j in range(0,8):
 
-					if random_items[i][j] in 'N/A' and upl[j] in 'N/A': 
+					if random_items is None: 
 						continue
-					elif random_items[i][j] in upl[j]:
-						#print(random_items[i][j])
-						#print(upl[j])
-						if column_mapping[pref] == j:
-							top_val_1.append(2)
-							#print(top_val_1)
-						else:
-							top_val_1.append(0.5)
-							#print(top_val_1)
+					else:
+						if random_items[i][j] in upl[j]:
+							#print(random_items[i][j])
+							#print(upl[j])
+							if column_mapping[pref] == j:
+								top_val_1.append(2)
+								#print(top_val_1)
+							else:
+								top_val_1.append(0.5)
+								#print(top_val_1)
 							
 
 				top = sum(top_val_1)
@@ -173,7 +185,7 @@ def RecommendedListView(request):
 			thread1.join()
 			context = queued_req1.get()
 			#print(time.time() - start_time3)
-			print(context)
+			#print(context)
 			return context
 		except:
 			print('Exception occured')
@@ -197,10 +209,14 @@ def RecommendedListView(request):
 			count = Item.objects.raw(q2)
 			return count
 		def fit_sql(liked_index_list):
-			str11 = 'SELECT id,max(mycount),fit FROM (SELECT id,fit, COUNT(fit) mycount FROM recommender_item where id in ('
-			str12 = ','.join(map(str,liked_index_list))
-			str13 = ') GROUP BY fit)'
-			q2 = str11 + str12 + str13
+			none_check = 'N/A'
+			str11 = 'SELECT id,max(mycount),fit FROM (SELECT id,fit, COUNT(fit) mycount FROM recommender_item where fit is not'
+			str12 = "'"+none_check+"'"
+			str13 = 'and'
+			str14 = ' id in ('
+			str15 = ','.join(map(str,liked_index_list))
+			str16 = ') GROUP BY fit)'
+			q2 = str11 + str12 + str13 + str14 + str15 + str16
 			count = Item.objects.raw(q2)
 			return count
 		def occasion_sql(liked_index_list):
@@ -370,7 +386,6 @@ def ItemLikeAllToggleView(request):
 
 def ItemsLikedToggleView(request):
 	item = get_object_or_404(Item, id = request.POST.get('id'))
-	print(item.get_total_likes())
 	is_liked = False
 	if item.likes.filter(id = request.user.id).exists():
 		item.likes.remove(request.user)
