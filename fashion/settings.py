@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'h=x=kxvc_#&&!i+9kxse)todembrch
 #DEBUG = False
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 INTERNAL_IPS = ('127.0.0.1', 'localhost',)
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fathomless-anchorage-14478.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
