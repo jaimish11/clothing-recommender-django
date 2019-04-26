@@ -1,10 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-
-class Preferences(models.Model):
-	user = models.OneToOneField(User, null = True, blank = True, on_delete = models.CASCADE)
-	preferences = models.CharField(max_length = 3000, null = True, blank = True)
 	
 class Item(models.Model):
 	
