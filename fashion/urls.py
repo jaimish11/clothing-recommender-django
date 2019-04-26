@@ -18,9 +18,9 @@ from django.urls import path, include
 from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('recommender/', include('recommender.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('/admin/', admin.site.urls),
+    path('/recommender/', include('recommender.urls')),
+    path('/accounts/', include('django.contrib.auth.urls')),
 ]
 # if settings.DEBUG:
 #     import debug_toolbar
