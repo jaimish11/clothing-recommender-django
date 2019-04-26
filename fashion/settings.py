@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'recommender.apps.RecommenderConfig',
     'import_export',
-    'debug_toolbar',
     'widget_tweaks'
 ]
 
