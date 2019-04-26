@@ -19,10 +19,14 @@
 			  		<ul class="list-group">
 						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Type: {{ item.item_type }}</li>
 						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Color: {{ item.color }}</li>
-						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Fit: {{ item.fit }}</li>
+						{% if item.fit not in 'N/A' %}
+							<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Fit: {{ item.fit }}</li>
+						{% endif %}
 						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Occasion: {{ item.occasion }}</li>
 						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Brand: {{ item.brand }}</li>
-						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Pattern: {{ item.pattern }}</li>
+						{% if item.pattern|length > 0 or item.pattern not in 'N/A' %}
+							<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Pattern: {{ item.pattern }}</li>
+						{% endif %}
 						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Fabric: {{ item.fabric }}</li>
 						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Length: {{ item.length }}</li>
 						<!--<li>Likes: {{ item.likes.count }} <a href="{{ item.get_like_url }}">Like</a></li>-->

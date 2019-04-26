@@ -4,12 +4,13 @@
 {% block content %}
 <h1>Liked Items</h1>
 	<div class="row">
-		{% for i,u in likes %}
+		{% for i,l in likes %}
 			<div class="column">
-				<a href="{% url 'item-detail' i %}"><img src="{{ u }}" alt="Unable to load image at this moment"></a>
+				<a href="{% url 'item-detail' i.id %}"><img src="{{ i.image_URL }}" alt="Unable to load image at this moment"></a>
 
-				<div id="like-all-section-{{i}}">
+				<div id="like-all-section-{{i.id}}">
 					{% include 'recommender/all_liked_toggle_section.html' %}
+
 				</div>
 	
 			</div>

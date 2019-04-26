@@ -2,18 +2,28 @@
 	<form action="{% url 'liked-items-toggle' %}" method="POST">
 		{% csrf_token %}
 		{% if is_liked %}
-			<button type="submit" name="item_id" id="liked_item_btn" class="btn btn-danger" value="{{ i }}" >Dislike</button>
+			<button type="submit" name="item_id" id="liked_item_btn" class="btn btn-danger" value="{{ i.id }}" >Dislike</button>
 		{% else %}
-			<button type="submit" name="item_id" id="liked_item_btn" class="btn btn-primary" value="{{item.id}}" >Like</button>
+			<button type="submit" name="item_id" id="liked_item_btn" class="btn btn-primary" value="{{ item.id }}" >Like</button>
 		{% endif %}
 	</form>
 {% endif %}
 
-	 
-{% if total_likes == 1 %}
-	{{ total_likes }} person has liked this item
-{% elif total_likes == 0 %}
-	No one has liked this item yet
+{% if total_likes >= 0 %}
+	{% if total_likes == 1 %}
+		{{ total_likes }} person has liked this item
+	{% elif total_likes == 0 %}
+		No one has liked this item yet
+	{% else %}
+		
+		{{ total_likes }} people have liked this item
+	{% endif %}
 {% else %}
-	{{ total_likes }} people have liked this item
+	{% if l == 1 %}
+		{{ l }} person has liked this item
+	{% elif l == 0 %}
+		No one has liked this item yet
+	{% else %}
+		{{ l }} people have liked this item
+	{% endif %}
 {% endif %}

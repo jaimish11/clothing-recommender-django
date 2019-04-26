@@ -19,11 +19,21 @@ from django.contrib import messages
 
 
 def index(request):
-	random_items = Item.objects.order_by('?').only('image_URL')[:21]
+	random_items = Item.objects.order_by('?').only('id','image_URL')[:21]
+	ids = []
+	urls = []
+	for i in random_items:
+		ids.append(i.id)
+	total_likes = Item.objects.only('id').filter(id__in = ids)
+	total_likes_list = []
+	for i in total_likes:
+		total_likes_list.append(i.get_total_likes())
+	random = zip(random_items,total_likes_list)
+	print(random)
 	context = {
 
 		'index_active_page': 'active',
-		'random_items': random_items,
+		'random_items': random
 	}
 	return render(request, 'index.html', context)
 
@@ -375,6 +385,7 @@ def ItemLikeAllToggleView(request):
 	else:
 		item.likes.add(request.user)
 		is_liked = True
+	print(item.get_total_likes())
 	context = {
 		'item': item,
 		'is_liked':is_liked,
@@ -410,18 +421,34 @@ def AllLikedItemsView(request, pk):
 			cursor.execute('select id, image_URL from recommender_item where id in (select item_id from recommender_item_likes where user_id = %s)', [request.user.id])
 			row = cursor.fetchall()
 			return row
+	def item_id():
+		with connection.cursor() as cursor:
+			cursor.execute('select item_id from recommender_item_likes where user_id = %s', [request.user.id])
+			row = cursor.fetchall()
+			return row
 	template_name = 'recommender/all_liked.html'
-	item = liked_item_id()
+	retrieved_ids = item_id()
+	ids_list = []
+	for i in retrieved_ids:
+		ids_list.append(i[0])
+	liked = Item.objects.filter(id__in = ids_list).only('id','image_URL')
+	# item = liked_item_id()
 	ids = []
 	urls = []
-	for i in item:
-		ids.append(i[0])
-		urls.append(i[1])
-	likes = zip(ids, urls)
+	
+	for i in liked:
+		ids.append(i.id)
+	total_likes = Item.objects.only('id').filter(id__in = ids)
+	total_likes_list = []
+	for i in total_likes:
+		total_likes_list.append(i.get_total_likes())
+	likes = zip(liked,total_likes_list)
+	
+
 	context = {
 		'is_liked': True,
 		'liked_active_page': 'active',
-		'likes': likes,
+		'likes': likes
 	}
 	return render(request, template_name, context = context)
 
