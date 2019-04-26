@@ -1,1 +1,1 @@
-web: gunicorn recommender.wsgi --log-file -
+web: gunicorn fashion.wsgi --log-file -
