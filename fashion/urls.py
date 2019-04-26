@@ -22,6 +22,10 @@ urlpatterns = [
     path('/recommender/', include('recommender.urls')),
     path('/accounts/', include('django.contrib.auth.urls')),
 ]
+from django.views.generic import RedirectView
+urlpatterns += [
+    path('', RedirectView.as_view(url='/recommender/', permanent=True)),
+]
 # if settings.DEBUG:
 #     import debug_toolbar
 #     urlpatterns = [
