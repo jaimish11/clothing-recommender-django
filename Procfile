@@ -1,1 +1,1 @@
-web: gunicorn fashion.wsgi --log-file --timeout 600
+web: gunicorn fashion.wsgi --log-file -
