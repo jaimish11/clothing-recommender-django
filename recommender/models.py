@@ -1,21 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
-import uuid
 
 class Preferences(models.Model):
 	user = models.OneToOneField(User, null = True, blank = True, on_delete = models.CASCADE)
 	preferences = models.CharField(max_length = 3000, null = True, blank = True)
 	
-'''class Liked(models.Model):
-	user = models.OneToOneField(User, primary_key = True, default = uuid.uuid4, on_delete = models.CASCADE)
-	liked_items = models.ManyToManyField('Item', blank = True, related_name = 'item_likes')
-
-	def get_like_url(self):
-		return reverse('like-toggle', args = [str(self.user.id)])
-'''
 class Item(models.Model):
-	#id = models.UUIDField(primary_key = True, default = uuid.uuid4, help_text = 'Unique ID for this particular item')
+	
 	item_type = models.CharField(max_length = 200, null = True, blank = True)
 	price = models.CharField(max_length = 200, null = True, blank = True)
 	color = models.CharField(max_length = 200, null = True, blank = True)
