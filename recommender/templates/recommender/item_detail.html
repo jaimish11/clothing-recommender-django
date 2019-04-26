@@ -5,22 +5,41 @@
 
 
 	<h1>Item detail</h1>
-	<ul>
-		<li>Name: {{ item.image_URL }}</li>
-		<li>Type: {{ item.item_type }}</li>
-		<li>Color: {{ item.color }}</li>
-		<li>Fit: {{ item.fit }}</li>
-		<li>Occasion: {{ item.occasion }}</li>
-		<li>Brand: {{ item.brand }}</li>
-		<li>Pattern: {{ item.pattern }}</li>
-		<li>Fabric: {{ item.fabric }}</li>
-		<li>Length: {{ item.length }}</li>
-		<!--<li>Likes: {{ item.likes.count }} <a href="{{ item.get_like_url }}">Like</a></li>-->
-		
-		<div id="like-section">
-			{% include 'recommender/like_section.html' %}
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12">
+			<div class="panel panel-default">
+			  	<div class="panel-body">
+			  		<img src="{{ item.image_URL }}" alt="Image could not be loaded at this moment">
+			  	</div>
+			 </div>
 		</div>
+		<div class="col-lg-6 col-md-6 col-sm-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+			  		<ul class="list-group">
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Type: {{ item.item_type }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Color: {{ item.color }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Fit: {{ item.fit }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Occasion: {{ item.occasion }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Brand: {{ item.brand }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Pattern: {{ item.pattern }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Fabric: {{ item.fabric }}</li>
+						<li class="list-group-item" style="padding: 1.1rem 1.25rem;">Length: {{ item.length }}</li>
+						<!--<li>Likes: {{ item.likes.count }} <a href="{{ item.get_like_url }}">Like</a></li>-->
+						
+						<div id="like-section" style="padding-top: 2em;">
+							{% include 'recommender/like_section.html' %}
+						</div>
 
-	</ul>
+					</ul>
+		  		
+		  	</div>
+			</div>
+		</div>
+	</div>
+		
+		  	
+		
+	
 	
 {% endblock %}

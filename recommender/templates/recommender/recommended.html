@@ -7,19 +7,25 @@
 	
 	$(document).ready(function(event){
 		$('#recommend-button').attr('disabled', 'disabled');
+		
+
 		function checkDropdown(){
 			
 			if (buttonDisable()) {
-				console.log('disabled')
+				console.log('called')
+				$("#recommend-button").removeClass("btn btn-danger");
+				$("#recommend-button").addClass("btn btn-success");
 		        $('#recommend-button').attr('disabled', false);
+		  
+
 		    } else {
 		        $('#recommend-button').attr('disabled', 'disabled');
+		       
 		    }
 		}
 		function buttonDisable(){
-			console.log('called')
-			console.log($('#preferences').val())
 			if ($('#preferences').val() != '' ) {
+
 	        	return true;
 	    	} else {
 	        	return false;
@@ -84,6 +90,7 @@
 
 	<form action="{% url 'recommended' %}" method="POST" >
 		{% csrf_token %}
+		
 		<select id="preferences" name="preferences">
 			<option selected="Preference" value=''>Select preference</option>
 			<option value="item_type">Type</option>
@@ -95,9 +102,10 @@
 			<option value="length">Length</option>
 
 		</select>
-		<input type="submit" name="recommend-button" id="recommend-button" value="Recommend">
+		<br>
+		<button class="btn btn-danger" type="submit" name="recommend-button" id="recommend-button" style="margin-top: 1em;">Recommend</button>
 	</form>
-	<button id="cancel-button" value="Cancel filters">Cancel filters</button>
+	
 
 	{% if messages %}
 		<ul class="messages">
@@ -111,7 +119,9 @@
 		
 		{% if rec %}
 			{% include 'recommender/filter_section.html' %}
+			<button class="btn btn-warning" name="cancel-button" id="cancel-button" style="margin-top: 0.2em;color:white;">Cancel filters</button>
 		{% endif %}
+		
 			
 			<div id="recommended-div" class="row">
 			{% for u,i in rec %}
@@ -123,6 +133,7 @@
 			
 			{% endfor %}
 			</div>
+	
 		
 			
 	{% endif %}

@@ -25,6 +25,9 @@ img{
   padding-bottom: 4px;
 }
 
+.list-group-item{
+  padding: 2em;
+}
 .sidebar-nav{
   margin: 0.5em 0em 0em 0em;
   padding: 0;
@@ -127,7 +130,12 @@ li.active a{
   padding: 1rem;
   transition: all 0.2s;
 }
-
+.btn span.glyphicon {         
+  opacity: 0;       
+}
+.btn.active span.glyphicon {        
+  opacity: 1;       
+}
 .btn-google {
   color: white;
   background-color: #ea4335;

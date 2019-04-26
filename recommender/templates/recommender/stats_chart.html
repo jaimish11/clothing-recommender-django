@@ -2,8 +2,29 @@
 {% load static %}
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% block content %}
-	<div id="item-container" style="width:50%; height:400px;"></div>
-	<div id="brand-container" style="width:50%; height:400px;"></div>
+	<h1>Admin statistics</h1>
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="card">
+				<div class="card-body shadow-lg">
+					<div id="item-container"></div>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div class="card shadow-lg" >
+				<div class="card-body">
+					<div id="brand-container"></div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	
+
+	
+	<!-- <div id="brand-container" style="width:50%; height:400px;"></div> -->
 <script src="https://code.highcharts.com/highcharts.src.js"></script>
 <script type="text/javascript">
 	var all = '{{ all|safe }}'
@@ -23,9 +44,10 @@
         plotShadow: false,
         type: 'pie'
     },
-    title: {
-        text: 'All liked items breakdown'
+    title:{
+    	text:'All liked items breakdown'
     },
+    
     tooltip: {
         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
     },

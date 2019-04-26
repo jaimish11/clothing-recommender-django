@@ -1,66 +1,85 @@
 
-			<div id="preference-filter">
-				<form action="{% url 'preference-filter' %}" method="POST">
-					{% csrf_token %}
-					<label>
-						<input type="checkbox" name="pref"  value="tshirts">T-shirts
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="shirts">Shirts
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="jeans">Jeans
+<div id="preference-filter">
+	<div class="panel-group">
+	  <div class="panel panel-default">
+	    <div class="panel-heading" style="margin-top: 1em;">
+	      <h4 class="panel-title">
+	        <a data-toggle="collapse" href="#collapse1">Filters</a>
+	      </h4>
+	    </div>
+	    <div id="collapse1" class="panel-collapse collapse">
+	      <div class="panel-body">
+	      	<form action="{% url 'preference-filter' %}" method="POST">
+		{% csrf_token %}
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="kurtas">Kurtas
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="tops">Tops
+			<label>
+				<input type="checkbox" name="pref"  value="tshirts">T-shirts
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="shirts">Shirts
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="jeans">Jeans
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="dresses">Dresses
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="kurtas">Kurtas
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="skirts">Skirts
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="tops">Tops
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="shorts">Shorts
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="dresses">Dresses
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="kurta-sets">Kurta sets
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="skirts">Skirts
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="leggings">Leggings
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="shorts">Shorts
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="tights">Tights
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="kurta-sets">Kurta sets
 
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="track-pants">Trackpants
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="trousers">Trousers
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="M">Male
-					</label>
-					<label>
-						<input type="checkbox" name="pref" value="F">Female
-					</label>
-					<button type="submit" id="filter-button">Filter</button>
-				</form>
-				
-				
-			</div>	
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="leggings">Leggings
+
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="tights">Tights
+
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="track-pants">Trackpants
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="trousers">Trousers
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="M">Male
+			</label>
+			<label>
+				<input type="checkbox" name="pref" value="F">Female
+			</label>
+			<button class="btn btn-primary" type="submit" id="filter-button">Filter</button>
+
+		
+	</form>
+	      </div>
+	      
+	    </div>
+	  </div>
+	</div>
+	
+	
+	
+</div>	
 <div id="filtered-div" class="row">
 	{% for i in items %}
 					<div class="column">

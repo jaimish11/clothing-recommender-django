@@ -114,7 +114,7 @@ def RecommendedListView(request):
 			desc_coe_list.append(value)
 
 		#print(desc_coe_list[:11])
-		desc_coe_list1 = desc_coe_list[:11]
+		desc_coe_list1 = desc_coe_list[:21]
 		#print(desc_coe_list1)
 		rec = tuple([int(i) for i in desc_coe_list1])
 		urls = []
